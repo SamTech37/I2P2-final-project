@@ -6,6 +6,7 @@
 #include <cmath>
 #include <fstream>
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <queue>
 #include <string>
@@ -229,6 +230,7 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
                 return;
             // Check if valid.
             if (!CheckSpaceValid(x, y)) {
+                // std::cout << "current space (" << x << "," << y << ") is invalid\n";
                 Engine::Sprite* sprite;
                 GroundEffectGroup->AddNewObject(sprite = new DirtyEffect("play/target-invalid.png", 1, x * BlockSize + BlockSize / 2, y * BlockSize + BlockSize / 2));
                 sprite->Rotation = 0;
@@ -419,14 +421,21 @@ void PlayScene::UIBtnClicked(int id) {
 }
 
 bool PlayScene::CheckSpaceValid(int x, int y) {
-    if (x < 0 || x >= MapWidth || y < 0 || y >= MapHeight)
+    // invalid coordinates
+    if (x < 0 || x >= MapWidth || y < 0 || y >= MapHeight) {
+        std::cout << "case1\n";
         return false;
+    }
+
+    // placing turrets should not block all enemy paths
     auto map00 = mapState[y][x];
     mapState[y][x] = TILE_OCCUPIED;
     std::vector<std::vector<int>> map = CalculateBFSDistance();
     mapState[y][x] = map00;
-    if (map[0][0] == -1)
+    if (map[0][0] == -1) {
+        std::cout << "case2\n";  // blocking right-bottom corner
         return false;
+    }
     for (auto& it : EnemyGroup->GetObjects()) {
         Engine::Point pnt;
         pnt.x = floor(it->Position.x / BlockSize);
@@ -435,8 +444,10 @@ bool PlayScene::CheckSpaceValid(int x, int y) {
         if (pnt.x >= MapWidth) pnt.x = MapWidth - 1;
         if (pnt.y < 0) pnt.y = 0;
         if (pnt.y >= MapHeight) pnt.y = MapHeight - 1;
-        if (map[pnt.y][pnt.x] == -1)
+        if (map[pnt.y][pnt.x] == -1) {
+            std::cout << "case3\n";  // blocking all enemy paths
             return false;
+        }
     }
     // All enemy have path to exit.
     mapState[y][x] = TILE_OCCUPIED;
@@ -447,9 +458,12 @@ bool PlayScene::CheckSpaceValid(int x, int y) {
 }
 std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
     // Reverse BFS to find path.
+
+    // NOTE: map[y][x] and queue of point(x,y)
     std::vector<std::vector<int>> map(MapHeight, std::vector<int>(std::vector<int>(MapWidth, -1)));
     std::queue<Engine::Point> que;
-    // Push end point.
+
+    // Push end point (the right-bottom corner of map)
     // BFS from end point.
     if (mapState[MapHeight - 1][MapWidth - 1] != TILE_DIRT)
         return map;
@@ -458,9 +472,67 @@ std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
     while (!que.empty()) {
         Engine::Point p = que.front();
         que.pop();
-        // TODO: [BFS PathFinding] (1/1): Implement a BFS starting from the most right-bottom block in the map.
+
+        // left
+        Engine::Point NextPoint(p.x - 1, p.y);
+        if (0 <= NextPoint.y && NextPoint.y <= MapHeight - 1 &&  // valid y
+            0 <= NextPoint.x && NextPoint.x <= MapWidth - 1      // valid x
+            && mapState[NextPoint.y][NextPoint.x] == TILE_DIRT   // empty tile
+            && map[NextPoint.y][NextPoint.x] == -1               // not visited
+        ) {
+            // assign distance & push to queue
+            map[NextPoint.y][NextPoint.x] = map[p.y][p.x] + 1;
+            que.push(NextPoint);
+        }
+        // right
+        NextPoint.x = p.x + 1;
+        if (0 <= NextPoint.y && NextPoint.y <= MapHeight - 1 &&  // valid y
+            0 <= NextPoint.x && NextPoint.x <= MapWidth - 1      // valid x
+            && mapState[NextPoint.y][NextPoint.x] == TILE_DIRT   // empty tile
+            && map[NextPoint.y][NextPoint.x] == -1               // not visited
+        ) {
+            // assign distance
+            map[NextPoint.y][NextPoint.x] = map[p.y][p.x] + 1;
+            que.push(NextPoint);
+        }
+        // up
+        NextPoint.x = p.x;
+        NextPoint.y = p.y - 1;
+        if (0 <= NextPoint.y && NextPoint.y <= MapHeight - 1 &&  // valid y
+            0 <= NextPoint.x && NextPoint.x <= MapWidth - 1      // valid x
+            && mapState[NextPoint.y][NextPoint.x] == TILE_DIRT   // empty tile
+            && map[NextPoint.y][NextPoint.x] == -1               // not visited
+        ) {
+            // assign distance
+            map[NextPoint.y][NextPoint.x] = map[p.y][p.x] + 1;
+            que.push(NextPoint);
+        }
+        // bottom
+        NextPoint.x = p.x;
+        NextPoint.y = p.y + 1;
+        if (0 <= NextPoint.y && NextPoint.y <= MapHeight - 1 &&  // valid y
+            0 <= NextPoint.x && NextPoint.x <= MapWidth - 1      // valid x
+            && mapState[NextPoint.y][NextPoint.x] == TILE_DIRT   // empty tile
+            && map[NextPoint.y][NextPoint.x] == -1               // not visited
+        ) {
+            // assign distance
+            map[NextPoint.y][NextPoint.x] = map[p.y][p.x] + 1;
+            que.push(NextPoint);
+        }
+
+        // Done: [BFS PathFinding] (1/1): Implement a BFS starting from the most right-bottom block in the map.
         //               For each step you should assign the corresponding distance to the most right-bottom block.
         //               mapState[y][x] is TILE_DIRT if it is empty.
     }
+
+    // testing
+    // std::cout << "current distances:\n";
+    // for (auto row : map) {
+    //     for (auto it : row) {
+    //         std::cout << it << " ";
+    //     }
+    //     std::cout << "\n";
+    // }
+
     return map;
 }
