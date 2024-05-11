@@ -2,24 +2,29 @@
 #define SettingsScene_HPP
 
 #include <allegro5/allegro_audio.h>
+
 #include <memory>
+
 #include "Engine/IScene.hpp"
 
 class SettingsScene final : public Engine::IScene {
-private:
+   private:
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
-public:
+
+   public:
     explicit SettingsScene() = default;
 
     void Initialize() override;
 
     void Terminate() override;
 
-    void PlayOnClick(int stage);
+    // void PlayOnClick(int stage);
 
     void BGMSlideOnValueChanged(float value);
 
     void SFXSlideOnValueChanged(float value);
+
+    void BackOnClick(int stage);
 };
 
-#endif // SettingsScene_HPP
+#endif  // SettingsScene_HPP
