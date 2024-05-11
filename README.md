@@ -1,5 +1,10 @@
 # 2024 I2P Mini Project 2 - Tower Defense
 
+## Caveats
+
+After making any changes to the Resource files, you must reload the project  
+in VSCode, CMake: Configue
+
 ## Grading
 
 | **Hackathon Tasks**              | **Score** | **Check** |
