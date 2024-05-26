@@ -5,6 +5,7 @@
 #include "Engine/LOG.hpp"
 #include "Scene/LoseScene.hpp"
 #include "Scene/PlayScene.hpp"
+#include "Scene/ScoreBoardScene.hpp"
 #include "Scene/SettingsScene.hpp"
 #include "Scene/StageSelectScene.hpp"
 #include "Scene/StartScene.h"
@@ -21,6 +22,7 @@ int main(int argc, char** argv) {
     game.AddNewScene("lose", new LoseScene());
     game.AddNewScene("win", new WinScene());
     game.AddNewScene("stage-select", new StageSelectScene());
+    game.AddNewScene("scoreboard-scene", new ScoreBoardScene());
 
     // Done: [HACKATHON-1-SCENE] (4/4): Change the start scene
     game.Start("start", 60, 1600, 832);
