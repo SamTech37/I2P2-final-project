@@ -16,35 +16,19 @@ void ScoreBoardScene::Initialize() {
     ticks = 0;
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
-    int halfW = w / 2;
-    int halfH = h / 2;
+    halfW = w / 2;
+    halfH = h / 2;
 
     // initialize the scoreboard from file
-    //  dummy data
-    std::vector<ScoreBoardData> scoreRecords = {
-        {"AAA", 100},
-        {"BBB", 90},
-        {"CCC", 80},
-        {"DDD", 70},
-        {"EEE", 60},
-        {"foobar", 2500},
-        {"GGG", 40},
-        {"HHH", 30},
-        {"III", 20},
-        {"JJJ", 10},
-    };
+
     // TODO: sort the scoreboard by score or date
+
+    // load the first batch
+    currentIndex = -5;
+    loadNextBatch();
 
     // title
     AddNewObject(new Engine::Label("SCORE BOARD", "pirulen.ttf", 48, halfW, halfH / 4 - 10, 255, 255, 255, 255, 0.5, 0.5));
-    // the scoreboard
-    for (int i = 0; i < scoreRecords.size(); i++) {
-        int recordY = halfH / 2 + 50 * i;
-        int spacing = 50;
-
-        AddNewObject(new Engine::Label(scoreRecords[i]._name, "pirulen.ttf", 36, halfW - 200, recordY, 255, 255, 255, 255, 0, 0.5));
-        AddNewObject(new Engine::Label(std::to_string(scoreRecords[i]._score), "pirulen.ttf", 36, halfW + 200, recordY, 255, 255, 255, 255, 1, 0.5));
-    }
 
     // go back button
     Engine::ImageButton* btn;
@@ -54,7 +38,15 @@ void ScoreBoardScene::Initialize() {
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 7 / 4, 0, 0, 0, 255, 0.5, 0.5));
 
     // pagination button
-    // btn  = new Engine::ImageButton("win/dirt.png", "win/floor.png", halfW - 200, halfH * 7 / 4 + 150, 400, 100);
+    btn = new Engine::ImageButton("win/dirt.png", "win/floor.png", 100, halfH * 7 / 4 - 50, 400, 100);
+    btn->SetOnClickCallback(std::bind(&ScoreBoardScene::loadPrevBatch, this));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Prev Page", "pirulen.ttf", 48, 300, halfH * 7 / 4, 255, 255, 255, 255, 0.5, 0.5));
+
+    btn = new Engine::ImageButton("win/dirt.png", "win/floor.png", halfW + 300, halfH * 7 / 4 - 50, 400, 100);
+    btn->SetOnClickCallback(std::bind(&ScoreBoardScene::loadNextBatch, this));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Next Page", "pirulen.ttf", 48, halfW * 2 - 300, halfH * 7 / 4, 255, 255, 255, 255, 0.5, 0.5));
 
     bgmId = AudioHelper::PlayAudio("win.wav");
 }
@@ -73,4 +65,59 @@ void ScoreBoardScene::Update(float deltaTime) {
 void ScoreBoardScene::BackOnClick(int stage) {
     // Change to select scene.
     Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+}
+void ScoreBoardScene::loadNextBatch() {
+    // do nothing if already at the end
+    if (currentIndex + batchSize >= scoreRecords.size())
+        return;
+
+    currentIndex += batchSize;
+    onScreenRecords.clear();
+    for (int i = currentIndex; i < currentIndex + batchSize && i < scoreRecords.size(); i++) {
+        onScreenRecords.push_back(scoreRecords[i]);
+    }
+    // redraw
+    for (auto label : nameLabels) {
+        RemoveObject(label->GetObjectIterator());
+    }
+    nameLabels.clear();
+    for (auto label : scoreLabels) {
+        RemoveObject(label->GetObjectIterator());
+    }
+    scoreLabels.clear();
+
+    drawBatch(halfW, halfH);
+}
+void ScoreBoardScene::loadPrevBatch() {
+    // do nothing if already at the beginning
+    if (currentIndex - batchSize < 0)
+        return;
+
+    currentIndex -= batchSize;
+    onScreenRecords.clear();
+    for (int i = currentIndex; i < currentIndex + batchSize && i < scoreRecords.size(); i++) {
+        onScreenRecords.push_back(scoreRecords[i]);
+    }
+    // redraw
+    for (auto label : nameLabels) {
+        RemoveObject(label->GetObjectIterator());
+    }
+    nameLabels.clear();
+    for (auto label : scoreLabels) {
+        RemoveObject(label->GetObjectIterator());
+    }
+    scoreLabels.clear();
+
+    drawBatch(halfW, halfH);
+}
+
+void ScoreBoardScene::drawBatch(int halfW, int halfH) {
+    for (int i = 0; i < onScreenRecords.size(); i++) {
+        int recordY = halfH / 2 + 50 * i;
+        int spacing = 50;
+        nameLabels.push_back(new Engine::Label(onScreenRecords[i]._name, "pirulen.ttf", 36, halfW - 200, recordY, 255, 255, 255, 255, 0, 0.5));
+        scoreLabels.push_back(new Engine::Label(std::to_string(onScreenRecords[i]._score), "pirulen.ttf", 36, halfW + 200, recordY, 255, 255, 255, 255, 0, 0.5));
+        AddNewObject(nameLabels[i]);
+        AddNewObject(scoreLabels[i]);
+    }
 }
