@@ -117,6 +117,11 @@ void ScoreBoardScene::drawBatch(int halfW, int halfH) {
         RemoveObject(label->GetObjectIterator());
     }
     scoreLabels.clear();
+    for (auto label : datetimeLabels) {
+        RemoveObject(label->GetObjectIterator());
+    }
+    datetimeLabels.clear();
+
     for (int i = 0; i < onScreenRecords.size(); i++) {
         int recordY = halfH / 2 + 60 * i;
         int recordX = halfW - 600;
