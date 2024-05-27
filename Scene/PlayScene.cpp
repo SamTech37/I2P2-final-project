@@ -20,6 +20,7 @@
 #include "Engine/GameEngine.hpp"
 #include "Engine/Group.hpp"
 #include "Engine/Resources.hpp"
+#include "Scene/WinScene.hpp"
 #include "Turret/LaserTurret.hpp"
 #include "Turret/MachineGunTurret.hpp"
 #include "Turret/MissileTurret.hpp"
@@ -136,16 +137,16 @@ void PlayScene::Update(float deltaTime) {
         if (enemyWaveData.empty()) {
             if (EnemyGroup->GetObjects().empty()) {
                 // Free resources.
-                /*delete TileMapGroup;
-                delete GroundEffectGroup;
-                delete DebugIndicatorGroup;
-                delete TowerGroup;
-                delete EnemyGroup;
-                delete BulletGroup;
-                delete EffectGroup;
-                delete UIGroup;
-                delete imgTarget;*/
-                Engine::GameEngine::GetInstance().ChangeScene("win");
+                // delete TileMapGroup;
+                // delete GroundEffectGroup;
+                // delete DebugIndicatorGroup;
+                // delete TowerGroup;
+                // delete EnemyGroup;
+                // delete BulletGroup;
+                // delete EffectGroup;
+                // delete UIGroup;
+                // delete imgTarget;
+                winGame();
             }
             continue;
         }
@@ -535,4 +536,16 @@ std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
     // }
 
     return map;
+}
+
+void PlayScene::winGame() {
+    // calculate score
+    int finalScore = money + lives * 100;
+
+    // pass the score to win scene
+    // it's certain that this returns a Winscene
+    // so we do a static cast
+    WinScene* winScene = static_cast<WinScene*>(Engine::GameEngine::GetInstance().GetScene("win"));
+    winScene->setScore(finalScore);
+    Engine::GameEngine::GetInstance().ChangeScene("win");
 }

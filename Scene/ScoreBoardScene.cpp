@@ -127,14 +127,18 @@ void ScoreBoardScene::drawBatch(int halfW, int halfH) {
 }
 
 // note:
-// change in file doesn't instantly reflect in game
-// solution?
+// the file being read/write is build/Resource/scoreboard.txt
+// instead of Resource/scoreboard.txt
+// because that's how Cmake builds this project
+// and whenever we build, the build folder is cleaned
 void ScoreBoardScene::readRecordsFromFile() {
     std::string filename = "Resource/scoreboard.txt";
     std::string name;
     int score;
     scoreRecords.clear();
     std::ifstream fin(filename);
+
+    std::cout << "reading from scoreboard.txt:\n";
     while (fin >> name && fin >> score) {
         scoreRecords.push_back(ScoreBoardData(name, score));
         std::cout << "name = " << name << " score = " << score << "\n";
