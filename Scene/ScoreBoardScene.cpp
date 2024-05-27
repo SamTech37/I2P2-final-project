@@ -59,6 +59,10 @@ void ScoreBoardScene::Initialize() {
     bgmId = AudioHelper::PlayAudio("win.wav");
 }
 void ScoreBoardScene::Terminate() {
+    nameLabels.clear();
+    scoreLabels.clear();
+    scoreRecords.clear();
+    onScreenRecords.clear();
     IScene::Terminate();
     AudioHelper::StopBGM(bgmId);
 }
@@ -85,14 +89,6 @@ void ScoreBoardScene::loadNextBatch() {
         onScreenRecords.push_back(scoreRecords[i]);
     }
     // redraw
-    for (auto label : nameLabels) {
-        RemoveObject(label->GetObjectIterator());
-    }
-    nameLabels.clear();
-    for (auto label : scoreLabels) {
-        RemoveObject(label->GetObjectIterator());
-    }
-    scoreLabels.clear();
 
     drawBatch(halfW, halfH);
 }
@@ -107,6 +103,10 @@ void ScoreBoardScene::loadPrevBatch() {
         onScreenRecords.push_back(scoreRecords[i]);
     }
     // redraw
+    drawBatch(halfW, halfH);
+}
+
+void ScoreBoardScene::drawBatch(int halfW, int halfH) {
     for (auto label : nameLabels) {
         RemoveObject(label->GetObjectIterator());
     }
@@ -116,10 +116,6 @@ void ScoreBoardScene::loadPrevBatch() {
     }
     scoreLabels.clear();
 
-    drawBatch(halfW, halfH);
-}
-
-void ScoreBoardScene::drawBatch(int halfW, int halfH) {
     for (int i = 0; i < onScreenRecords.size(); i++) {
         int recordY = halfH / 2 + 50 * i;
         int spacing = 50;
@@ -130,6 +126,9 @@ void ScoreBoardScene::drawBatch(int halfW, int halfH) {
     }
 }
 
+// note:
+// change in file doesn't instantly reflect in game
+// solution?
 void ScoreBoardScene::readRecordsFromFile() {
     std::string filename = "Resource/scoreboard.txt";
     std::string name;

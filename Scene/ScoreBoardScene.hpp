@@ -16,7 +16,7 @@ class ScoreBoardScene final : public Engine::IScene {
     struct ScoreBoardData {
         std::string _name;
         int _score;
-        // datetime
+        // std::string datetime
 
         ScoreBoardData(std::string name, int score) : _name(name), _score(score) {}
     };
