@@ -1,5 +1,6 @@
 #include "WinScene.hpp"
 
+#include <ctime>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -61,35 +62,55 @@ void WinScene::setScore(int score) {
 // and when build, scoreboard.txt will be overwritten,
 // so it looks unchanged
 
+std::string getCurrentDatetime() {
+    time_t now = time(0);
+    tm* ltm = localtime(&now);
+    int year = 1900 + ltm->tm_year;
+    int month = 1 + ltm->tm_mon;
+    int day = ltm->tm_mday;
+    int hour = ltm->tm_hour;
+    int min = ltm->tm_min;
+    std::string yearStr = std::to_string(year);
+    std::string monthStr = ((month < 10) ? "0" : "") + std::to_string(month);
+    std::string dayStr = ((day < 10) ? "0" : "") + std::to_string(day);
+    std::string hourStr = ((hour < 10) ? "0" : "") + std::to_string(hour);
+    std::string minStr = ((min < 10) ? "0" : "") + std::to_string(min);
+    // format: yyyy-mm-dd@hh:mm
+    return yearStr + "-" + monthStr + "-" + dayStr + "@" + hourStr + ":" + minStr;
+}
+
 void WinScene::writeScoreToFile() {
     std::string filename = "Resource/scoreboard.txt";
 
-    std::ifstream fin(filename);
-    std::cout << "Current content of scoreboard.txt:\n";
-    if (fin.is_open()) {
-        std::string line;
-        while (getline(fin, line)) {
-            std::cout << line << "\n";
-        }
-        fin.close();
-    }
+    // std::ifstream fin(filename);
+    // std::cout << "Current content of scoreboard.txt:\n";
+    // if (fin.is_open()) {
+    //     std::string line;
+    //     while (getline(fin, line)) {
+    //         std::cout << line << "\n";
+    //     }
+    //     fin.close();
+    // }
 
     std::cout << "Now writing to scoreboard.txt:\n";
     std::ofstream fout(filename, std::ios::app);  // append mode
     if (!fout.is_open()) {
         return;
     }
-    fout << "\n";                              // make sure the new score is on a new line
-    fout << "foobar" << " " << score << "\n";  // default name: foobar
+    fout << "\n";     // make sure the new score is on a new line
+    fout << "foobar"  // default name: foobar
+         << " " << score
+         << " " << getCurrentDatetime()
+         << "\n";
     fout.close();
 
-    std::ifstream finModified(filename);
-    std::cout << "Modified content of scoreboard.txt:\n";
-    if (finModified.is_open()) {
-        std::string line;
-        while (getline(finModified, line)) {
-            std::cout << line << "\n";
-        }
-        finModified.close();
-    }
+    // std::ifstream finModified(filename);
+    // std::cout << "Modified content of scoreboard.txt:\n";
+    // if (finModified.is_open()) {
+    //     std::string line;
+    //     while (getline(finModified, line)) {
+    //         std::cout << line << "\n";
+    //     }
+    //     finModified.close();
+    // }
 }

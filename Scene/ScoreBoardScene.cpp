@@ -32,8 +32,10 @@ void ScoreBoardScene::Initialize() {
               });
 
     // load the first batch
-    currentIndex = -5;
+    currentIndex = -batchSize;
     loadNextBatch();
+    if (onScreenRecords.size() == 0)
+        drawEmptyNote(halfW, halfH);
 
     // title
     AddNewObject(new Engine::Label("SCORE BOARD", "pirulen.ttf", 48, halfW, halfH / 4 - 10, 255, 255, 255, 255, 0.5, 0.5));
@@ -115,14 +117,16 @@ void ScoreBoardScene::drawBatch(int halfW, int halfH) {
         RemoveObject(label->GetObjectIterator());
     }
     scoreLabels.clear();
-
     for (int i = 0; i < onScreenRecords.size(); i++) {
-        int recordY = halfH / 2 + 50 * i;
-        int spacing = 50;
-        nameLabels.push_back(new Engine::Label(onScreenRecords[i]._name, "pirulen.ttf", 36, halfW - 200, recordY, 255, 255, 255, 255, 0, 0.5));
-        scoreLabels.push_back(new Engine::Label(std::to_string(onScreenRecords[i]._score), "pirulen.ttf", 36, halfW + 200, recordY, 255, 255, 255, 255, 0, 0.5));
+        int recordY = halfH / 2 + 60 * i;
+        int recordX = halfW - 600;
+        int spacingX = 400;
+        nameLabels.push_back(new Engine::Label(onScreenRecords[i]._name, "pirulen.ttf", 36, recordX, recordY, 255, 255, 255, 255, 0, 0.5));
+        scoreLabels.push_back(new Engine::Label(std::to_string(onScreenRecords[i]._score), "pirulen.ttf", 36, recordX + spacingX, recordY, 255, 255, 255, 255, 0, 0.5));
+        datetimeLabels.push_back(new Engine::Label(onScreenRecords[i].datetime, "pirulen.ttf", 36, recordX + 2 * spacingX, recordY, 255, 255, 255, 255, 0, 0.5));
         AddNewObject(nameLabels[i]);
         AddNewObject(scoreLabels[i]);
+        AddNewObject(datetimeLabels[i]);
     }
 }
 
@@ -134,14 +138,25 @@ void ScoreBoardScene::drawBatch(int halfW, int halfH) {
 void ScoreBoardScene::readRecordsFromFile() {
     std::string filename = "Resource/scoreboard.txt";
     std::string name;
+    std::string datetime;
     int score;
     scoreRecords.clear();
     std::ifstream fin(filename);
 
     std::cout << "reading from scoreboard.txt:\n";
-    while (fin >> name && fin >> score) {
-        scoreRecords.push_back(ScoreBoardData(name, score));
-        std::cout << "name = " << name << " score = " << score << "\n";
+    while (fin >> name && fin >> score && fin >> datetime) {
+        scoreRecords.push_back(ScoreBoardData(name, score, datetime));
+        std::cout << "name = " << name
+                  << " score = " << score
+                  << " datetime = " << datetime
+                  << "\n";
     }
     fin.close();
+}
+void ScoreBoardScene::drawEmptyNote(int halfW, int halfH) {
+    nameLabels.push_back(
+        new Engine::Label("No records yet.", "pirulen.ttf", 48, halfW, halfH / 2, 255, 255, 255, 255, 0.5, 0.5));
+
+    AddNewObject(nameLabels[0]);
+    return;
 }
