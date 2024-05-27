@@ -59,6 +59,7 @@ class ScoreBoardScene final : public Engine::IScene {
     void loadNextBatch();
     void loadPrevBatch();
     void drawBatch(int halfW, int halfH);
+    void readRecordsFromFile();
 };
 
 #endif  // SCOREBOARDSCENE_HPP

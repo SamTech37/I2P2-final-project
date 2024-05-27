@@ -1,7 +1,9 @@
 #include "ScoreBoardScene.hpp"
 
+#include <algorithm>
+#include <fstream>
 #include <functional>
-#include <string>
+#include <iostream>
 
 #include "Engine/AudioHelper.hpp"
 #include "Engine/GameEngine.hpp"
@@ -20,8 +22,14 @@ void ScoreBoardScene::Initialize() {
     halfH = h / 2;
 
     // initialize the scoreboard from file
+    readRecordsFromFile();
 
-    // TODO: sort the scoreboard by score or date
+    // sort the scoreboard by score or date
+    std::sort(scoreRecords.begin(), scoreRecords.end(),
+              // a lambda function to compare two ScoreBoardData
+              [](const ScoreBoardData& a, const ScoreBoardData& b) {
+                  return a._score > b._score;
+              });
 
     // load the first batch
     currentIndex = -5;
@@ -120,4 +128,17 @@ void ScoreBoardScene::drawBatch(int halfW, int halfH) {
         AddNewObject(nameLabels[i]);
         AddNewObject(scoreLabels[i]);
     }
+}
+
+void ScoreBoardScene::readRecordsFromFile() {
+    std::string filename = "Resource/scoreboard.txt";
+    std::string name;
+    int score;
+    scoreRecords.clear();
+    std::ifstream fin(filename);
+    while (fin >> name && fin >> score) {
+        scoreRecords.push_back(ScoreBoardData(name, score));
+        std::cout << "name = " << name << " score = " << score << "\n";
+    }
+    fin.close();
 }
