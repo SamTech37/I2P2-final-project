@@ -61,8 +61,10 @@ void ScoreBoardScene::Initialize() {
     bgmId = AudioHelper::PlayAudio("win.wav");
 }
 void ScoreBoardScene::Terminate() {
+    // cleanup
     nameLabels.clear();
     scoreLabels.clear();
+    datetimeLabels.clear();
     scoreRecords.clear();
     onScreenRecords.clear();
     IScene::Terminate();
