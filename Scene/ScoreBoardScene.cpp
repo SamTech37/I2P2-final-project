@@ -149,6 +149,8 @@ void ScoreBoardScene::readRecordsFromFile() {
     std::ifstream fin(filename);
 
     std::cout << "reading from scoreboard.txt:\n";
+    // TODO refactor this to getline
+    //  and deal with formatting issues
     while (fin >> name && fin >> score && fin >> datetime) {
         scoreRecords.push_back(ScoreBoardData(name, score, datetime));
         std::cout << "name = " << name

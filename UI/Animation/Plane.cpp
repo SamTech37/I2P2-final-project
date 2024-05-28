@@ -78,7 +78,7 @@ void Plane::Update(float deltaTime) {
                     enemy->Hit(INFINITY);
             }
             break;
-            // todo: mimic this code to create a new kind of turret
+            // DONE: mimic this code to create a new kind of turret
             //  that attacks with shockwave
         case 3:
             getPlayScene()->EffectGroup->RemoveObject(objectIterator);
