@@ -147,7 +147,7 @@ void PlayScene::Update(float deltaTime) {
                 // delete EffectGroup;
                 // delete UIGroup;
                 // delete imgTarget;
-                winGame();
+                gameover();
             }
             continue;
         }
@@ -302,7 +302,8 @@ void PlayScene::Hit() {
     lives--;
     UILives->Text = std::string("Life ") + std::to_string(lives);
     if (lives <= 0) {
-        Engine::GameEngine::GetInstance().ChangeScene("lose");
+        // Engine::GameEngine::GetInstance().ChangeScene("lose");
+        gameover();
     }
 }
 int PlayScene::GetMoney() const {
@@ -410,6 +411,9 @@ void PlayScene::ConstructUI() {
     dangerIndicator = new Engine::Sprite("play/benjamin.png", w - shift, h - shift);
     dangerIndicator->Tint.a = 0;
     UIGroup->AddNewObject(dangerIndicator);
+
+    Engine::ImageButton* GameOverBtn;
+    // GameOverBtn = new Engine::ImageButton("play/gameover.png", w / 2, h / 2, 0, 0, 0, 0);
 }
 
 void PlayScene::UIBtnClicked(int id) {
@@ -551,7 +555,7 @@ std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
     return map;
 }
 
-void PlayScene::winGame() {
+void PlayScene::gameover() {
     // calculate score
     int finalScore = money + lives * 100;
 

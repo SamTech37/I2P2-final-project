@@ -84,6 +84,6 @@ class PlayScene final : public Engine::IScene {
     std::vector<std::vector<int>> CalculateBFSDistance();
     // void ModifyReadMapTiles();
 
-    void winGame();
+    void gameover();
 };
 #endif  // PLAYSCENE_HPP

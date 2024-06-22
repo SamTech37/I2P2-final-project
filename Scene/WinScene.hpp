@@ -4,6 +4,7 @@
 
 #include "Engine/IScene.hpp"
 
+// the gameover scene
 class WinScene final : public Engine::IScene {
    private:
     float ticks;

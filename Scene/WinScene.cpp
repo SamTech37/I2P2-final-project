@@ -20,10 +20,14 @@ void WinScene::Initialize() {
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
     int halfH = h / 2;
-    AddNewObject(new Engine::Image("win/benjamin-sad.png", halfW, halfH, 0, 0, 0.5, 0.5));
-    AddNewObject(new Engine::Label("You Win!", "pirulen.ttf", 48, halfW, halfH / 4 - 10, 255, 255, 255, 255, 0.5, 0.5));
+    // AddNewObject(new Engine::Image("win/benjamin-sad.png", halfW, halfH, 0, 0, 0.5, 0.5));
+    int spacingY = 60;
+    AddNewObject(new Engine::Label("Game Over", "pirulen.ttf", 48, halfW, halfH / 4, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Score: " + std::to_string(score), "pirulen.ttf", 48, halfW, halfH / 4 + spacingY, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Enter Name:", "pirulen.ttf", 48, halfW, halfH / 4 + 2 * spacingY, 255, 255, 255, 255, 0.5, 0.5));
 
-    AddNewObject(new Engine::Label("Score: " + std::to_string(score), "pirulen.ttf", 48, halfW, halfH / 4 + 50, 255, 255, 255, 255, 0.5, 0.5));
+    // TODO: add a text input
+    // and a counter to indicate the limit of the input
 
     Engine::ImageButton* btn;
     btn = new Engine::ImageButton("win/dirt.png", "win/floor.png", halfW - 200, halfH * 7 / 4 - 50, 400, 100);
