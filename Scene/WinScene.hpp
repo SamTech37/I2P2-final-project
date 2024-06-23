@@ -22,7 +22,8 @@ class WinScene final : public Engine::IScene {
     void writeScoreRecordToFile();
     void writeScoreRecordToRemote();
     Engine::TextInput* nameInput;
-    // add a text input
+
+    void test();
 };
 
 #endif  // WINSCENE_HPP

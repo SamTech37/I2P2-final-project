@@ -1,5 +1,7 @@
 #include "WinScene.hpp"
 
+#include <curl/curl.h>
+
 #include <ctime>
 #include <fstream>
 #include <functional>
@@ -14,6 +16,32 @@
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
 #include "UI/Component/TextInput.hpp"
+
+void WinScene::test() {
+    // remeber to convert it to c style string
+    std::string requestURL = "https://i2p2-server.vercel.app/api";
+    CURL* curl;
+    CURLcode res;
+    curl = curl_easy_init();
+
+    if (curl) {
+        // set the HTTPs request options: URL, SSL,CA etc.
+        curl_easy_setopt(curl, CURLOPT_URL, requestURL.c_str());
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 1);
+        curl_easy_setopt(curl, CURLOPT_CAINFO, "Resource/cacert.pem");
+        curl_easy_setopt(curl, CURLOPT_CAPATH, "Resource/cacert.pem");
+        fprintf(stdout, "Response: \n");
+        // perform the request
+        // this also calls the write callback function
+        // default it writes to stdout
+        res = curl_easy_perform(curl);
+        if (res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+    } else {
+        fprintf(stderr, "curl_easy_init() failed\n");
+    }
+}
 
 void WinScene::Initialize() {
     ticks = 0;
@@ -34,6 +62,12 @@ void WinScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&WinScene::BackOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 7 / 4, 0, 0, 0, 255, 0.5, 0.5));
+
+    btn = new Engine::ImageButton("win/dirt.png", "win/floor.png", halfW - 200, halfH, 400, 100);
+    btn->SetOnClickCallback(std::bind(&WinScene::test, this));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("test", "pirulen.ttf", 48, halfW, halfH + 50, 0, 0, 0, 255, 0.5, 0.5));
+
     bgmId = AudioHelper::PlayAudio("win.wav");
 }
 void WinScene::Terminate() {
