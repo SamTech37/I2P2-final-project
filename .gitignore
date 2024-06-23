@@ -3,5 +3,6 @@ build
 .idea
 *.dll
 !allegro_monolith-5.2.dll
+!libcurl-x64.dll
 log.txt
 Makefile

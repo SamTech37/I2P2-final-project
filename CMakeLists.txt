@@ -11,6 +11,8 @@ file(COPY Resource/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY Resource/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY Resource DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY allegro_monolith-5.2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY libcurl-x64.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 
 add_executable(2024_I2P2_TowerDefense_with_answer
         Engine/Allegro5Exception.cpp
@@ -104,6 +106,10 @@ add_executable(2024_I2P2_TowerDefense_with_answer
 )
 
 IF (WIN32)
+    target_include_directories(2024_I2P2_TowerDefense_with_answer PUBLIC C:/libcurl/include)
+    target_link_directories(2024_I2P2_TowerDefense_with_answer PUBLIC C:/libcurl/lib)
+    target_link_libraries(2024_I2P2_TowerDefense_with_answer libcurl)
+
     target_include_directories(2024_I2P2_TowerDefense_with_answer PUBLIC C:/allegro/include)
     target_link_directories(2024_I2P2_TowerDefense_with_answer PUBLIC C:/allegro/lib)
     target_compile_options(2024_I2P2_TowerDefense_with_answer PUBLIC ${ALLEGRO5_CFLAGS_OTHER})
