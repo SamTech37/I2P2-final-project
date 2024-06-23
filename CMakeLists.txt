@@ -103,6 +103,10 @@ add_executable(2024_I2P2_TowerDefense_with_answer
         Bullet/WaveBullet.hpp
         UI/Component/TextInput.cpp
         UI/Component/TextInput.hpp
+
+        # make sure to include all the library files:
+        # headers, libs, dlls, etc.
+        json.hpp
 )
 
 IF (WIN32)

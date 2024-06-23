@@ -1,9 +1,12 @@
 #include "ScoreBoardScene.hpp"
 
+#include <curl/curl.h>
+
 #include <algorithm>
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <string>
 
 #include "Engine/AudioHelper.hpp"
 #include "Engine/GameEngine.hpp"
@@ -12,6 +15,7 @@
 #include "UI/Component/Image.hpp"
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
+#include "json.hpp"
 
 void ScoreBoardScene::Initialize() {
     // scene property
@@ -21,8 +25,11 @@ void ScoreBoardScene::Initialize() {
     halfW = w / 2;
     halfH = h / 2;
 
+    // initialize the scoreboard from remote
+    readRecordsFromRemote();
+
     // initialize the scoreboard from file
-    readRecordsFromFile();
+    // readRecordsFromFile();
 
     // sort the scoreboard by score or date
     std::sort(scoreRecords.begin(), scoreRecords.end(),
@@ -137,6 +144,14 @@ void ScoreBoardScene::drawBatch(int halfW, int halfH) {
     }
 }
 
+void ScoreBoardScene::drawEmptyNote(int halfW, int halfH) {
+    nameLabels.push_back(
+        new Engine::Label("No records yet.", "pirulen.ttf", 48, halfW, halfH / 2, 255, 255, 255, 255, 0.5, 0.5));
+
+    AddNewObject(nameLabels[0]);
+    return;
+}
+
 // note:
 // the file being read/write is build/Resource/scoreboard.txt
 // instead of Resource/scoreboard.txt
@@ -156,16 +171,70 @@ void ScoreBoardScene::readRecordsFromFile() {
     while (fin >> name && fin >> score && fin >> datetime) {
         scoreRecords.push_back(ScoreBoardData(name, score, datetime));
         std::cout << "name = " << name
-                  << " score = " << score
-                  << " datetime = " << datetime
+                  << ", score = " << score
+                  << ", datetime = " << datetime
                   << "\n";
     }
     fin.close();
 }
-void ScoreBoardScene::drawEmptyNote(int halfW, int halfH) {
-    nameLabels.push_back(
-        new Engine::Label("No records yet.", "pirulen.ttf", 48, halfW, halfH / 2, 255, 255, 255, 255, 0.5, 0.5));
 
-    AddNewObject(nameLabels[0]);
-    return;
+using json = nlohmann::json;
+
+// callback function for curl
+static size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* s) {
+    size_t newLength = size * nmemb;
+    try {
+        s->append((char*)contents, newLength);
+    } catch (std::bad_alloc& e) {
+        // handle memory problem
+        std::cerr << "Memory problem\n";
+        return 0;
+    }
+    return newLength;
+}
+
+void ScoreBoardScene::readRecordsFromRemote() {
+    std::string requestURL = "https://i2p2-server.vercel.app/api";
+    CURL* curl;
+    CURLcode res;
+
+    std::string responseBuffer;
+
+    curl = curl_easy_init();
+
+    if (curl) {
+        // set the HTTPs request options: URL, SSL,CA etc.
+        curl_easy_setopt(curl, CURLOPT_URL, requestURL.c_str());
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYSTATUS, 1);
+        curl_easy_setopt(curl, CURLOPT_CAINFO, "Resource/cacert.pem");
+        curl_easy_setopt(curl, CURLOPT_CAPATH, "Resource/cacert.pem");
+        // set the callback function to write the response
+        // the default is to write to stdout
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseBuffer);
+
+        // perform the request
+        // this also calls the write callback function
+        res = curl_easy_perform(curl);
+        if (res == CURLE_OK) {
+            fprintf(stdout, "curl_easy_perform() success\n");
+            fprintf(stdout, "Response: \n");
+            std::cout << responseBuffer << std::endl;
+            // then parse the json
+            json j = json::parse(responseBuffer);
+            for (auto record : j) {
+                std::string name = record["playerName"];
+                int score = record["score"];
+                std::string datetime = record["datetime"];
+                scoreRecords.push_back(ScoreBoardData(name, score, datetime));
+            }
+
+        } else {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+
+        curl_easy_cleanup(curl);
+    } else {
+        fprintf(stderr, "curl_easy_init() failed\n");
+    }
 }

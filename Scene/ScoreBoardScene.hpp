@@ -43,6 +43,7 @@ class ScoreBoardScene final : public Engine::IScene {
     void drawBatch(int halfW, int halfH);
     void drawEmptyNote(int halfW, int halfH);
     void readRecordsFromFile();
+    void readRecordsFromRemote();
 };
 
 #endif  // SCOREBOARDSCENE_HPP
