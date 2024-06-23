@@ -298,6 +298,7 @@ void PlayScene::OnKeyDown(int keyCode) {
     else if (keyCode >= ALLEGRO_KEY_0 && keyCode <= ALLEGRO_KEY_9) {
         // Hotkey for Speed up.
         SpeedMult = keyCode - ALLEGRO_KEY_0;
+        UISpeedmul->Text = "Speedmul " + std::to_string(SpeedMult) + "x";
     }
 }
 void PlayScene::Hit() {
@@ -404,6 +405,7 @@ void PlayScene::ConstructUI() {
     UIGroup->AddNewObject(UIWaves = new Engine::Label(std::string("waves ") + std::to_string(waveCount), "pirulen.ttf", 24, 1294, textUIHeight * 2));
     UIGroup->AddNewObject(UIMoney = new Engine::Label(std::string("$") + std::to_string(money), "pirulen.ttf", 24, 1294, textUIHeight * 3));
     UIGroup->AddNewObject(UILives = new Engine::Label(std::string("Life ") + std::to_string(lives), "pirulen.ttf", 24, 1294, textUIHeight * 4));
+    UIGroup->AddNewObject(UISpeedmul = new Engine::Label(std::string("Speedmul ") + std::to_string(SpeedMult) + "x", "pirulen.ttf", 24, 1294, textUIHeight * 5));
 
     // Turret Buttons
     {

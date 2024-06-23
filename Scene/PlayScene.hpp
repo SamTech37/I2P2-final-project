@@ -82,6 +82,7 @@ class PlayScene final : public Engine::IScene {
     Engine::Label* UIWaves;
     Engine::Label* UIMoney;
     Engine::Label* UILives;
+    Engine::Label* UISpeedmul;
     Engine::Image* imgTarget;
     Engine::Sprite* dangerIndicator;
     // upgrade btns for turrets: atk,cd,range
