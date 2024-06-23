@@ -1,5 +1,5 @@
-#ifndef IMAGEBUTTON_HPP
-#define IMAGEBUTTON_HPP
+#ifndef TEXTINPUT_HPP
+#define TEXTINPUT_HPP
 #include <allegro5/bitmap.h>
 
 #include <functional>
@@ -11,9 +11,9 @@
 
 namespace Engine {
 /// <summary>
-/// A clickable button, changes image when mouse move.
+/// A clickable button, changes image when mouse move.
 /// </summary>
-class ImageButton : public Image, public IControl {
+class TextInput : public Image, public IControl {
    protected:
     // Determines whether mouse is in the button.
     bool mouseIn = false;
@@ -38,7 +38,7 @@ class ImageButton : public Image, public IControl {
     /// <param name="h">Height of the image, 0 indicates original size.</param>
     /// <param name="anchorX">The centerX of the object. (0, 0) means top-left, while (1, 0) means top-right.</param>
     /// <param name="anchorY">The centerY of the object. (0, 1) means bottom-left, while (1, 1) means bottom-right.</param>
-    explicit ImageButton(std::string img, std::string imgIn, float x, float y, float w = 0, float h = 0, float anchorX = 0, float anchorY = 0);
+    explicit TextInput(std::string img, std::string imgIn, float x, float y, float w = 0, float h = 0, float anchorX = 0, float anchorY = 0);
     /// <summary>
     /// Set the callback function when clicked.
     /// </summary>
@@ -57,6 +57,7 @@ class ImageButton : public Image, public IControl {
     /// <param name="mx">Mouse x coordinate in window space.</param>
     /// <param name="my">Mouse y coordinate in window space.</param>
     void OnMouseMove(int mx, int my) override;
+    void OnKeyDown(int keyCode) override;
 };
 }  // namespace Engine
-#endif  // IMAGEBUTTON_HPP
+#endif  // TEXTINPUT_HPP

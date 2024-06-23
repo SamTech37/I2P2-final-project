@@ -99,8 +99,8 @@ add_executable(2024_I2P2_TowerDefense_with_answer
         Turret/WaveTurret.hpp
         Bullet/WaveBullet.cpp
         Bullet/WaveBullet.hpp
-#        UI/Component/TextInput.cpp
-#        UI/Component/TextInput.hpp
+        UI/Component/TextInput.cpp
+        UI/Component/TextInput.hpp
 )
 
 IF (WIN32)

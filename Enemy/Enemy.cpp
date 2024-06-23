@@ -19,6 +19,7 @@
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/ExplosionEffect.hpp"
 
+float Enemy::waveUpgradeFactor = 1.0f;
 PlayScene* Enemy::getPlayScene() {
     return dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
 }
@@ -33,9 +34,13 @@ void Enemy::OnExplode() {
         getPlayScene()->GroundEffectGroup->AddNewObject(new DirtyEffect("play/dirty-" + std::to_string(distId(rng)) + ".png", dist(rng), Position.x, Position.y));
     }
 }
-Enemy::Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money) : Engine::Sprite(img, x, y), speed(speed), hp(hp), money(money) {
+Enemy::Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money) : Engine::Sprite(img, x, y) {
     CollisionRadius = radius;
     reachEndTime = 0;
+    // enemy gets stronger over time
+    this->speed = speed * waveUpgradeFactor;
+    this->hp = hp * waveUpgradeFactor;
+    this->money = money * waveUpgradeFactor;
 }
 void Enemy::Hit(float damage) {
     hp -= damage;
@@ -123,4 +128,10 @@ void Enemy::Draw() const {
         // Draw collision radius.
         al_draw_circle(Position.x, Position.y, CollisionRadius, al_map_rgb(255, 0, 0), 2);
     }
+}
+void Enemy::getUpgradeMultiplier(int currentWave) {
+    // update the multiplier every time the waveCount changes
+    // every 10 waves, the enemy will be 2 times stronger
+    // 1.072 ^ 10 = 2
+    waveUpgradeFactor = pow(1.072, currentWave / 10);
 }

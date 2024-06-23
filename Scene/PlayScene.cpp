@@ -144,6 +144,7 @@ void PlayScene::Update(float deltaTime) {
         if (enemyWaveData.empty()) {
             GenerateEnemyWaveData();
             waveCountAdd(10);
+            Enemy::getUpgradeMultiplier(waveCount);
             continue;
         }
         auto current = enemyWaveData.front();
