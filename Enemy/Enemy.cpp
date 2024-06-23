@@ -131,7 +131,8 @@ void Enemy::Draw() const {
 }
 void Enemy::getUpgradeMultiplier(int currentWave) {
     // update the multiplier every time the waveCount changes
-    // every 10 waves, the enemy will be 2 times stronger
-    // 1.072 ^ 10 = 2
-    waveUpgradeFactor = pow(1.072, currentWave / 10);
+    // every 40 waves, the enemy will be 2 times stronger
+    // 1.19 ^ 4 = 2
+    const float base = 1.19;
+    waveUpgradeFactor = pow(base, currentWave / 10);
 }
