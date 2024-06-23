@@ -32,6 +32,21 @@ class PlayScene final : public Engine::IScene {
     int lives;
     int money;
     int SpeedMult;
+    struct TurretUpgrades {
+        int atkLevel;
+        int cdLevel;
+        int rangeLevel;
+        const int cost = 50;
+        const float atkMul = 0.2;
+        void Reset() {
+            atkLevel = 0;
+            cdLevel = 0;
+            rangeLevel = 0;
+        }
+        float GetAtk() const {
+            return 1.0f + atkMul * atkLevel;
+        }
+    } turretUpgrades;
 
    public:
     static bool DebugMode;
@@ -65,6 +80,10 @@ class PlayScene final : public Engine::IScene {
     Engine::Sprite* dangerIndicator;
     // upgrade btns for turrets: atk,cd,range
     Group* UpgradeGroup;
+    Engine::Label* UIAtkLv;
+    Engine::Label* UICdLv;
+    Engine::Label* UIRangeLv;
+
     Turret* preview;
     std::vector<std::vector<TileType>> mapState;
     std::vector<std::vector<int>> mapDistance;
@@ -88,9 +107,9 @@ class PlayScene final : public Engine::IScene {
     void GenerateEnemyWaveData();
     void ConstructUI();
     void UIBtnClicked(int id);
+    void HandleUpgrade(int id);
     bool CheckSpaceValid(int x, int y);
     std::vector<std::vector<int>> CalculateBFSDistance();
-
     void killCountAdd(int val);
     void waveCountAdd(int val);
     void gameover();
