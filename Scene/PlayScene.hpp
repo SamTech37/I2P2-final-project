@@ -45,6 +45,9 @@ class PlayScene final : public Engine::IScene {
     int MapId;
     float ticks;
     float deathCountDown;
+
+    int killCount = 0;
+    int waveCount = 0;
     // Map tiles.
     Group* TileMapGroup;
     Group* GroundEffectGroup;
@@ -55,6 +58,7 @@ class PlayScene final : public Engine::IScene {
     Group* EffectGroup;
     Group* UIGroup;
     Engine::Label* UIKills;
+    Engine::Label* UIWaves;
     Engine::Label* UIMoney;
     Engine::Label* UILives;
     Engine::Image* imgTarget;
@@ -63,7 +67,6 @@ class PlayScene final : public Engine::IScene {
     std::vector<std::vector<TileType>> mapState;
     std::vector<std::vector<int>> mapDistance;
     std::list<std::pair<int, float>> enemyWaveData;
-    int killCount = 0;
     std::list<int> keyStrokes;
     static Engine::Point GetClientSize();
     explicit PlayScene() = default;
@@ -87,6 +90,7 @@ class PlayScene final : public Engine::IScene {
     std::vector<std::vector<int>> CalculateBFSDistance();
 
     void killCountAdd(int val);
+    void waveCountAdd(int val);
     void gameover();
 };
 #endif  // PLAYSCENE_HPP

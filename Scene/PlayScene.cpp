@@ -54,6 +54,7 @@ void PlayScene::Initialize() {
     lives = 10;
     money = 150;
     killCount = 0;
+    waveCount = 0;
     SpeedMult = 1;
     srand(time(nullptr));
     // Add groups from bottom to top.
@@ -142,6 +143,7 @@ void PlayScene::Update(float deltaTime) {
         ticks += deltaTime;
         if (enemyWaveData.empty()) {
             GenerateEnemyWaveData();
+            waveCountAdd(10);
             continue;
         }
         auto current = enemyWaveData.front();
@@ -311,6 +313,10 @@ void PlayScene::killCountAdd(int val) {
     killCount += val;
     UIKills->Text = std::string("kills ") + std::to_string(killCount);
 }
+void PlayScene::waveCountAdd(int val) {
+    waveCount += val;
+    UIWaves->Text = std::string("Wave ") + std::to_string(waveCount);
+}
 void PlayScene::ReadMap() {
     std::string filename = std::string("Resource/map") + std::to_string(MapId) + ".txt";
     // Read map file.
@@ -383,13 +389,15 @@ void PlayScene::ConstructUI() {
     // Background
     UIGroup->AddNewObject(new Engine::Image("play/sand.png", 1280, 0, 320, 832));
     // Text
-    UIGroup->AddNewObject(UIKills = new Engine::Label(std::string("kills ") + std::to_string(killCount), "pirulen.ttf", 32, 1294, 0));
-    UIGroup->AddNewObject(UIMoney = new Engine::Label(std::string("$") + std::to_string(money), "pirulen.ttf", 24, 1294, 48));
-    UIGroup->AddNewObject(UILives = new Engine::Label(std::string("Life ") + std::to_string(lives), "pirulen.ttf", 24, 1294, 88));
+    const int textUIHeight = 30;
+    UIGroup->AddNewObject(UIKills = new Engine::Label(std::string("kills ") + std::to_string(killCount), "pirulen.ttf", 24, 1294, textUIHeight * 1));
+    UIGroup->AddNewObject(UIWaves = new Engine::Label(std::string("waves ") + std::to_string(waveCount), "pirulen.ttf", 24, 1294, textUIHeight * 2));
+    UIGroup->AddNewObject(UIMoney = new Engine::Label(std::string("$") + std::to_string(money), "pirulen.ttf", 24, 1294, textUIHeight * 3));
+    UIGroup->AddNewObject(UILives = new Engine::Label(std::string("Life ") + std::to_string(lives), "pirulen.ttf", 24, 1294, textUIHeight * 4));
     TurretButton* btn;
     // Button 1
     const int TurretBtnX[4] = {1294, 1370, 1446, 1446 + 76};
-    const int TurretBtnY = 136;
+    const int TurretBtnY = 200;
     btn = new TurretButton("play/floor.png", "play/dirt.png",
                            Engine::Sprite("play/tower-base.png", TurretBtnX[0], TurretBtnY, 0, 0, 0, 0),
                            Engine::Sprite("play/turret-1.png", TurretBtnX[0], TurretBtnY - 8, 0, 0, 0, 0), TurretBtnX[0], TurretBtnY, MachineGunTurret::Price);
