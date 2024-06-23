@@ -474,19 +474,21 @@ void PlayScene::ConstructUI() {
         UpgradeGroup->AddNewControlObject(UpgradeBtn);
         UpgradeGroup->AddNewObject(UIAtkLv = new Engine::Label("100%", "pirulen.ttf", 32, upgradeX + upgradeSpacingX, upgradeY, 0, 0, 0, 255, 0, 0));
 
-        // // CD upgrade
-        // UpgradeBtn = new UpgradeButton("play/floor.png", "play/dirt.png",
-        //                                Engine::Sprite("play/CooldownUpgradeIcon.png", upgradeX, upgradeY + upgradeSpacingY, 0, 0, 0, 0), upgradeX, upgradeY + upgradeSpacingY, turretUpgrades.cost);
-        // UpgradeBtn->SetOnClickCallback(
-        //     std::bind(&PlayScene::HandleUpgrade, this, 1));
-        // UpgradeGroup->AddNewControlObject(UpgradeBtn);
+        // CD upgrade
+        UpgradeBtn = new UpgradeButton("play/floor.png", "play/dirt.png",
+                                       Engine::Sprite("play/CooldownUpgradeIcon.png", upgradeX, upgradeY + upgradeSpacingY, 0, 0, 0, 0), upgradeX, upgradeY + upgradeSpacingY, turretUpgrades.cost);
+        UpgradeBtn->SetOnClickCallback(
+            std::bind(&PlayScene::HandleUpgrade, this, 1));
+        UpgradeGroup->AddNewControlObject(UpgradeBtn);
+        UpgradeGroup->AddNewObject(UICdLv = new Engine::Label("100%", "pirulen.ttf", 32, upgradeX + upgradeSpacingX, upgradeY + upgradeSpacingY * 1, 0, 0, 0, 255, 0, 0));
 
-        // // range upgrade
-        // UpgradeBtn = new UpgradeButton("play/floor.png", "play/dirt.png",
-        //                                Engine::Sprite("play/AtkUpgradeIcon.png", upgradeX, upgradeY + upgradeSpacingY * 2, 0, 0, 0, 0), upgradeX, upgradeY + upgradeSpacingY * 2, turretUpgrades.cost);
-        // UpgradeBtn->SetOnClickCallback(
-        //     std::bind(&PlayScene::HandleUpgrade, this, 2));
-        // UpgradeGroup->AddNewControlObject(UpgradeBtn);
+        // range upgrade
+        UpgradeBtn = new UpgradeButton("play/floor.png", "play/dirt.png",
+                                       Engine::Sprite("play/RangeUpgradeIcon.png", upgradeX, upgradeY + upgradeSpacingY * 2, 0, 0, 0, 0), upgradeX, upgradeY + upgradeSpacingY * 2, turretUpgrades.cost);
+        UpgradeBtn->SetOnClickCallback(
+            std::bind(&PlayScene::HandleUpgrade, this, 2));
+        UpgradeGroup->AddNewControlObject(UpgradeBtn);
+        UpgradeGroup->AddNewObject(UIRangeLv = new Engine::Label("100%", "pirulen.ttf", 32, upgradeX + upgradeSpacingX, upgradeY + upgradeSpacingY * 2, 0, 0, 0, 255, 0, 0));
     }
 }
 
@@ -502,9 +504,11 @@ void PlayScene::HandleUpgrade(int id) {
             break;
         case 1:
             turretUpgrades.cdLevel++;
+            UICdLv->Text = std::to_string((int)(turretUpgrades.GetCd() * 100)) + "%";
             break;
         case 2:
             turretUpgrades.rangeLevel++;
+            UIRangeLv->Text = std::to_string((int)(turretUpgrades.GetRange() * 100)) + "%";
             break;
     }
 }

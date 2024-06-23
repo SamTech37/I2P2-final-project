@@ -39,14 +39,20 @@ class PlayScene final : public Engine::IScene {
         int cdLevel;
         int rangeLevel;
         const int cost = 50;
-        const float atkMul = 0.2;
         void Reset() {
             atkLevel = 0;
             cdLevel = 0;
             rangeLevel = 0;
         }
         inline float GetAtk() const {
-            return 1.0f + atkMul * atkLevel;
+            return 1.0f + 0.2 * atkLevel;
+        }
+        inline float GetRange() const {
+            return 1.0f + 0.1 * rangeLevel;
+        }
+        inline float GetCd() const {
+            return 1.0f / (1.0f + 0.1 * cdLevel);
+            // 10/10, 10/11,10/12 ...
         }
     } turretUpgrades;
     static bool DebugMode;
