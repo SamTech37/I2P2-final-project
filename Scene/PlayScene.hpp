@@ -63,6 +63,8 @@ class PlayScene final : public Engine::IScene {
     Engine::Label* UILives;
     Engine::Image* imgTarget;
     Engine::Sprite* dangerIndicator;
+    // upgrade btns for turrets: atk,cd,range
+    Group* UpgradeGroup;
     Turret* preview;
     std::vector<std::vector<TileType>> mapState;
     std::vector<std::vector<int>> mapDistance;

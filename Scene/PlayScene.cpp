@@ -67,6 +67,7 @@ void PlayScene::Initialize() {
     AddNewObject(EffectGroup = new Group());
     // Should support buttons.
     AddNewControlObject(UIGroup = new Group());
+    AddNewControlObject(UpgradeGroup = new Group());
     ReadMap();
     GenerateEnemyWaveData();
     mapDistance = CalculateBFSDistance();
