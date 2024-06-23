@@ -32,6 +32,8 @@ class PlayScene final : public Engine::IScene {
     int lives;
     int money;
     int SpeedMult;
+
+   public:
     struct TurretUpgrades {
         int atkLevel;
         int cdLevel;
@@ -43,12 +45,10 @@ class PlayScene final : public Engine::IScene {
             cdLevel = 0;
             rangeLevel = 0;
         }
-        float GetAtk() const {
+        inline float GetAtk() const {
             return 1.0f + atkMul * atkLevel;
         }
     } turretUpgrades;
-
-   public:
     static bool DebugMode;
     static const std::vector<Engine::Point> directions;
     static const int MapWidth, MapHeight;
