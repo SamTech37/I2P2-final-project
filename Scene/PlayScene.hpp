@@ -54,6 +54,7 @@ class PlayScene final : public Engine::IScene {
     Group* EnemyGroup;
     Group* EffectGroup;
     Group* UIGroup;
+    Engine::Label* UIKills;
     Engine::Label* UIMoney;
     Engine::Label* UILives;
     Engine::Image* imgTarget;
@@ -62,6 +63,7 @@ class PlayScene final : public Engine::IScene {
     std::vector<std::vector<TileType>> mapState;
     std::vector<std::vector<int>> mapDistance;
     std::list<std::pair<int, float>> enemyWaveData;
+    int killCount = 0;
     std::list<int> keyStrokes;
     static Engine::Point GetClientSize();
     explicit PlayScene() = default;
@@ -77,13 +79,14 @@ class PlayScene final : public Engine::IScene {
     int GetMoney() const;
     void EarnMoney(int money);
     void ReadMap();
-    void ReadEnemyWave();
+    // randomly generate enemy wave data, 10 waves each time
+    void GenerateEnemyWaveData();
     void ConstructUI();
     void UIBtnClicked(int id);
     bool CheckSpaceValid(int x, int y);
     std::vector<std::vector<int>> CalculateBFSDistance();
-    // void ModifyReadMapTiles();
 
+    void killCountAdd(int val);
     void gameover();
 };
 #endif  // PLAYSCENE_HPP

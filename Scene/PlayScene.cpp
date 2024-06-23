@@ -9,6 +9,7 @@
 #include <iostream>
 #include <memory>
 #include <queue>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -46,16 +47,15 @@ Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
 }
 void PlayScene::Initialize() {
-    // Done: [HACKATHON-3-BUG] (1/5): There's a bug in this file, which crashes the game when you lose. Try to find it.
-    // Done: [HACKATHON-3-BUG] (2/5): Find out the cheat code to test.
-    // Done: [HACKATHON-3-BUG] (2/5): It should generate a Plane, and add 10000 to the money, but it doesn't work now.
     mapState.clear();
     keyStrokes.clear();
     ticks = 0;
     deathCountDown = -1;
     lives = 10;
     money = 150;
+    killCount = 0;
     SpeedMult = 1;
+    srand(time(nullptr));
     // Add groups from bottom to top.
     AddNewObject(TileMapGroup = new Group());
     AddNewObject(GroundEffectGroup = new Group());
@@ -67,7 +67,7 @@ void PlayScene::Initialize() {
     // Should support buttons.
     AddNewControlObject(UIGroup = new Group());
     ReadMap();
-    ReadEnemyWave();
+    GenerateEnemyWaveData();
     mapDistance = CalculateBFSDistance();
     ConstructUI();
     imgTarget = new Engine::Image("play/target.png", 0, 0);
@@ -87,6 +87,8 @@ void PlayScene::Terminate() {
     IScene::Terminate();
 }
 void PlayScene::Update(float deltaTime) {
+    /* a buggy death count down feature
+
     // If we use deltaTime directly, then we might have Bullet-through-paper problem.
     // Reference: Bullet-Through-Paper
     if (SpeedMult == 0)
@@ -131,31 +133,23 @@ void PlayScene::Update(float deltaTime) {
     }
     if (SpeedMult == 0)
         deathCountDown = -1;
+    */
+
+    // spawn enemies
     for (int i = 0; i < SpeedMult; i++) {
         IScene::Update(deltaTime);
         // Check if we should create new enemy.
         ticks += deltaTime;
         if (enemyWaveData.empty()) {
-            if (EnemyGroup->GetObjects().empty()) {
-                // Free resources.
-                // delete TileMapGroup;
-                // delete GroundEffectGroup;
-                // delete DebugIndicatorGroup;
-                // delete TowerGroup;
-                // delete EnemyGroup;
-                // delete BulletGroup;
-                // delete EffectGroup;
-                // delete UIGroup;
-                // delete imgTarget;
-                gameover();
-            }
+            GenerateEnemyWaveData();
             continue;
         }
         auto current = enemyWaveData.front();
-        if (ticks < current.second)
+        if (ticks < current.second)  // keep waiting
             continue;
         ticks -= current.second;
         enemyWaveData.pop_front();
+
         const Engine::Point SpawnCoordinate = Engine::Point(SpawnGridPoint.x * BlockSize + BlockSize / 2, SpawnGridPoint.y * BlockSize + BlockSize / 2);
         Enemy* enemy;
         switch (current.first) {
@@ -313,6 +307,10 @@ void PlayScene::EarnMoney(int money) {
     this->money += money;
     UIMoney->Text = std::string("$") + std::to_string(this->money);
 }
+void PlayScene::killCountAdd(int val) {
+    killCount += val;
+    UIKills->Text = std::string("kills ") + std::to_string(killCount);
+}
 void PlayScene::ReadMap() {
     std::string filename = std::string("Resource/map") + std::to_string(MapId) + ".txt";
     // Read map file.
@@ -353,25 +351,39 @@ void PlayScene::ReadMap() {
         }
     }
 }
-void PlayScene::ReadEnemyWave() {
-    // Done: [HACKATHON-3-BUG] (3/5): Trace the code to know how the enemies are created.
-    // Done: [HACKATHON-3-BUG] (3/5): There is a bug in these files, which let the game only spawn the first enemy, try to fix it.
-    std::string filename = std::string("Resource/enemy") + std::to_string(MapId) + ".txt";
-    // Read enemy file.
-    float type, wait, repeat;
-    enemyWaveData.clear();
-    std::ifstream fin(filename);
-    while (fin >> type && fin >> wait && fin >> repeat) {
-        for (int i = 0; i < repeat; i++)
+void PlayScene::GenerateEnemyWaveData() {
+    const int enemyTypes = 3;  // infantry, plane, tank
+    const int maxWait = 2;
+    int maxRepeat, minRepeat;
+    int type, wait, repeat;
+    // std::string filename = std::string("Resource/enemy") + std::to_string(MapId) + ".txt";
+    // enemyWaveData.clear();
+    // std::ifstream fin(filename);
+    // while (fin >> type && fin >> wait && fin >> repeat) {
+    //     for (int i = 0; i < repeat; i++)
+    //         enemyWaveData.emplace_back(type, wait);
+    // }
+    // fin.close();
+    for (int i = 0; i < 10; i++) {
+        type = rand() % enemyTypes + 1;  // 1~3
+        wait = rand() % maxWait;         // 0~2
+        if (type == 1)
+            maxRepeat = 20, minRepeat = 5;
+        else if (type == 2)
+            maxRepeat = 10, minRepeat = 3;
+        else if (type == 3)
+            maxRepeat = 5, minRepeat = 1;
+
+        repeat = rand() % (maxRepeat - minRepeat + 1) + minRepeat;  // 1~20
+        for (int j = 0; j < repeat; j++)
             enemyWaveData.emplace_back(type, wait);
     }
-    fin.close();
 }
 void PlayScene::ConstructUI() {
     // Background
     UIGroup->AddNewObject(new Engine::Image("play/sand.png", 1280, 0, 320, 832));
     // Text
-    UIGroup->AddNewObject(new Engine::Label(std::string("Stage ") + std::to_string(MapId), "pirulen.ttf", 32, 1294, 0));
+    UIGroup->AddNewObject(UIKills = new Engine::Label(std::string("kills ") + std::to_string(killCount), "pirulen.ttf", 32, 1294, 0));
     UIGroup->AddNewObject(UIMoney = new Engine::Label(std::string("$") + std::to_string(money), "pirulen.ttf", 24, 1294, 48));
     UIGroup->AddNewObject(UILives = new Engine::Label(std::string("Life ") + std::to_string(lives), "pirulen.ttf", 24, 1294, 88));
     TurretButton* btn;
@@ -413,7 +425,14 @@ void PlayScene::ConstructUI() {
     UIGroup->AddNewObject(dangerIndicator);
 
     Engine::ImageButton* GameOverBtn;
-    // GameOverBtn = new Engine::ImageButton("play/gameover.png", w / 2, h / 2, 0, 0, 0, 0);
+    GameOverBtn = new Engine::ImageButton("play/floor.png", "play/dirt.png", 1350, h - 100, 200, 50, 0, 0);
+    GameOverBtn->SetOnClickCallback([this]() {
+        gameover();
+    });
+    AddNewControlObject(GameOverBtn);
+    AddNewObject(
+        new Engine::Label(
+            "Quit", "pirulen.ttf", 20, 1450, h - 80, 0, 0, 0, 255, 0.5, 0.5));
 }
 
 void PlayScene::UIBtnClicked(int id) {
