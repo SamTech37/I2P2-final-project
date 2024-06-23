@@ -3,6 +3,7 @@
 #include <allegro5/allegro_audio.h>
 
 #include "Engine/IScene.hpp"
+#include "UI/Component/TextInput.hpp"
 
 // the gameover scene
 class WinScene final : public Engine::IScene {
@@ -18,7 +19,9 @@ class WinScene final : public Engine::IScene {
     void Update(float deltaTime) override;
     void BackOnClick(int stage);
     void setScore(int score);
-    void writeScoreToFile();
+    void writeScoreRecordToFile();
+    void writeScoreRecordToRemote();
+    Engine::TextInput* nameInput;
     // add a text input
 };
 

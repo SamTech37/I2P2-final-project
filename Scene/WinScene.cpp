@@ -13,6 +13,7 @@
 #include "UI/Component/Image.hpp"
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
+#include "UI/Component/TextInput.hpp"
 
 void WinScene::Initialize() {
     ticks = 0;
@@ -25,9 +26,8 @@ void WinScene::Initialize() {
     AddNewObject(new Engine::Label("Game Over", "pirulen.ttf", 48, halfW, halfH / 4, 255, 255, 255, 255, 0.5, 0.5));
     AddNewObject(new Engine::Label("Score: " + std::to_string(score), "pirulen.ttf", 48, halfW, halfH / 4 + spacingY, 255, 255, 255, 255, 0.5, 0.5));
     AddNewObject(new Engine::Label("Enter Name:", "pirulen.ttf", 48, halfW, halfH / 4 + 2 * spacingY, 255, 255, 255, 255, 0.5, 0.5));
-
-    // TODO: add a text input
-    // and a counter to indicate the limit of the input
+    // a text input
+    AddNewControlObject(nameInput = new Engine::TextInput("foobar", "pirulen.ttf", 48, halfW, halfH / 4 + 3 * spacingY, 0, 255, 0, 255, 0.5, 0.5));
 
     Engine::ImageButton* btn;
     btn = new Engine::ImageButton("win/dirt.png", "win/floor.png", halfW - 200, halfH * 7 / 4 - 50, 400, 100);
@@ -35,10 +35,9 @@ void WinScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 7 / 4, 0, 0, 0, 255, 0.5, 0.5));
     bgmId = AudioHelper::PlayAudio("win.wav");
-
-    writeScoreToFile();
 }
 void WinScene::Terminate() {
+    writeScoreRecordToFile();
     IScene::Terminate();
     AudioHelper::StopBGM(bgmId);
 }
@@ -83,38 +82,20 @@ std::string getCurrentDatetime() {
     return yearStr + "-" + monthStr + "-" + dayStr + "@" + hourStr + ":" + minStr;
 }
 
-void WinScene::writeScoreToFile() {
-    std::string filename = "Resource/scoreboard.txt";
+void WinScene::writeScoreRecordToFile() {
+    std::string playerName = (nameInput->Text.length() >= 0) ? nameInput->Text : "foobar";  // default name: foobar
 
-    // std::ifstream fin(filename);
-    // std::cout << "Current content of scoreboard.txt:\n";
-    // if (fin.is_open()) {
-    //     std::string line;
-    //     while (getline(fin, line)) {
-    //         std::cout << line << "\n";
-    //     }
-    //     fin.close();
-    // }
+    std::string filename = "Resource/scoreboard.txt";
 
     std::cout << "Now writing to scoreboard.txt:\n";
     std::ofstream fout(filename, std::ios::app);  // append mode
     if (!fout.is_open()) {
         return;
     }
-    fout << "\n";     // make sure the new score is on a new line
-    fout << "foobar"  // default name: foobar
+    fout << "\n";  // make sure the new score is on a new line
+    fout << playerName
          << " " << score
          << " " << getCurrentDatetime()
          << "\n";
     fout.close();
-
-    // std::ifstream finModified(filename);
-    // std::cout << "Modified content of scoreboard.txt:\n";
-    // if (finModified.is_open()) {
-    //     std::string line;
-    //     while (getline(finModified, line)) {
-    //         std::cout << line << "\n";
-    //     }
-    //     finModified.close();
-    // }
 }
