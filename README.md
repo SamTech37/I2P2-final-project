@@ -23,4 +23,4 @@ in VSCode, CMake: Configue
 | --------- | --- | ------------ |
 
 used library: Allegro5, libcurl, nlohmann/json.  
-I've also set up a simple json server with Nextjs (should've used express.js instead) for the online scoreboard.
+I've also set up a simple json server with Nextjs (should've used express.js instead) and FirebaseDB for the online scoreboard.
