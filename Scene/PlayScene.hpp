@@ -48,7 +48,7 @@ class PlayScene final : public Engine::IScene {
             return 1.0f + 0.2 * atkLevel;
         }
         inline float GetRange() const {
-            return 1.0f + 0.1 * rangeLevel;
+            return 1.0f + 0.05 * rangeLevel;
         }
         inline float GetCd() const {
             return 1.0f / (1.0f + 0.1 * cdLevel);
