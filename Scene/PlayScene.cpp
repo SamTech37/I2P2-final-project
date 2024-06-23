@@ -586,7 +586,7 @@ std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
 
 void PlayScene::gameover() {
     // calculate score
-    int finalScore = money + lives * 100;
+    int finalScore = money + lives * 100 + killCount * 10 + waveCount * 50;
 
     // pass the score to win scene
     // it's certain that this returns a Winscene

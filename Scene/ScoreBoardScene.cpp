@@ -217,8 +217,8 @@ void ScoreBoardScene::readRecordsFromRemote() {
         // this also calls the write callback function
         res = curl_easy_perform(curl);
         if (res == CURLE_OK) {
-            fprintf(stdout, "curl_easy_perform() success\n");
-            fprintf(stdout, "Response: \n");
+            std::cout << "curl_easy_perform() success\n";
+            std::cout << "Response: \n";
             std::cout << responseBuffer << std::endl;
             // then parse the json
             json j = json::parse(responseBuffer);
@@ -230,11 +230,11 @@ void ScoreBoardScene::readRecordsFromRemote() {
             }
 
         } else {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << "\n";
         }
 
         curl_easy_cleanup(curl);
     } else {
-        fprintf(stderr, "curl_easy_init() failed\n");
+        std::cerr << "curl_easy_init() failed\n";
     }
 }
