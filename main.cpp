@@ -1,6 +1,8 @@
 // [main.cpp]
 // This is the entry point of your game.
 // You can register your scenes here, and start the game.
+#include <curl/curl.h>
+
 #include "Engine/GameEngine.hpp"
 #include "Engine/LOG.hpp"
 #include "Scene/LoseScene.hpp"
@@ -23,6 +25,9 @@ int main(int argc, char** argv) {
     game.AddNewScene("win", new WinScene());
     game.AddNewScene("stage-select", new StageSelectScene());
     game.AddNewScene("scoreboard-scene", new ScoreBoardScene());
+
+    /*inits the winsock stuff*/
+    curl_global_init(CURL_GLOBAL_ALL);
 
     // Done: [HACKATHON-1-SCENE] (4/4): Change the start scene
     game.Start("start", 60, 1600, 832);
